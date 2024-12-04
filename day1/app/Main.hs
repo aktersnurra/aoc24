@@ -2,6 +2,8 @@ module Main where
 
 import qualified Data.HashMap.Strict as S
 import Data.List (sort, transpose)
+import System.Environment (getArgs)
+import System.Exit (exitFailure, exitSuccess)
 import Text.Read (readMaybe)
 
 parse :: String -> Maybe [[Int]]
@@ -14,11 +16,11 @@ sortLists _ = Nothing
 distance :: Int -> Int -> Int
 distance x y = abs ((-) x y)
 
-totalDistance :: Maybe [[Int]] -> Maybe Int
-totalDistance (Just [xs, ys]) = Just (sum $ zipWith distance xs ys)
+totalDistance :: [[Int]] -> Maybe Int
+totalDistance [xs, ys] = Just (sum $ zipWith distance xs ys)
 totalDistance _ = Nothing
 
-part1 :: Maybe [[Int]] -> Maybe Int
+part1 :: [[Int]] -> Maybe Int
 part1 = totalDistance
 
 occurrences :: [Int] -> S.HashMap Int Int
@@ -31,15 +33,29 @@ calculateScore Nothing _ = 0
 similarityScore :: Int -> Int -> S.HashMap Int Int -> Int
 similarityScore acc k hm = (+) acc $ calculateScore (S.lookup k hm) k
 
-part2 :: Maybe [[Int]] -> Maybe Int
-part2 (Just [l, r]) = Just (foldl (\acc k -> similarityScore acc k hm) 0 l)
+part2 :: [[Int]] -> Maybe Int
+part2 [xs, ys] = Just (foldl (\acc k -> similarityScore acc k hm) 0 xs)
  where
-  hm = occurrences r
+  hm = occurrences ys
 part2 _ = Nothing
+
+solve :: String -> ([[Int]] -> Maybe Int) -> Maybe Int
+solve input part = parse input >>= part
+
+getPart :: [String] -> Maybe ([[Int]] -> Maybe Int)
+getPart ["part1"] = Just part1
+getPart ["part2"] = Just part2
+getPart _ = Nothing
+
+out :: Maybe Int -> IO a
+out (Just x) = do
+  print x
+  exitSuccess
+out _ = exitFailure
 
 main :: IO ()
 main = do
+  args <- getArgs
   contents <- getContents
-  let input = parse contents
-  print $ part1 input
-  print $ part2 input
+  let part = getPart args
+  out $ part >>= solve contents
