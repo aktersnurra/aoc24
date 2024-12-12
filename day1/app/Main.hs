@@ -43,8 +43,8 @@ solve :: String -> ([[Int]] -> Maybe Int) -> Maybe Int
 solve input part = parse input >>= part
 
 getPart :: [String] -> Maybe ([[Int]] -> Maybe Int)
-getPart ["part1"] = Just part1
-getPart ["part2"] = Just part2
+getPart ["1"] = Just part1
+getPart ["2"] = Just part2
 getPart _ = Nothing
 
 out :: Maybe Int -> IO a
