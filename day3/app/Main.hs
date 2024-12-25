@@ -13,7 +13,7 @@ nums :: String -> [String]
 nums x = getAllTextMatches (x =~ "[0-9][0-9]?[0-9]?")
 
 multiply :: [String] -> Int
-multiply (x : y : []) = (*) (read x) (read y)
+multiply [x, y] = (*) (read x) (read y)
 multiply _ = error "err"
 
 part1 :: String -> Int
